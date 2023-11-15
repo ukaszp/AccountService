@@ -22,9 +22,9 @@ namespace AccountApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetAll()
+        public ActionResult<IEnumerable<User>> GetAll([FromQuery]string search)
         {
-            var users = userService.GetAll();
+            var users = userService.GetAll(search);
 
             return Ok(users);
         }
@@ -52,13 +52,13 @@ namespace AccountApi.Controllers
         }
 
 
-        [HttpPut("{id}")]
+      /*  [HttpPut("{id}")]
         public ActionResult Update([FromBody] User user, [FromRoute]int id)
         {   
             userService.UpdateUser(id, user);
 
             return Ok();
-        }
+        }*/
 
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute]int id)

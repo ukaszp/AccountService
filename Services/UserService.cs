@@ -23,7 +23,7 @@ namespace AccountApi.Services
         private readonly IMapper mapper;
         private readonly AuthenticationSettings authenticationSettings;
 
-        public UserService(AccountDbContext dbContext, ILogger<UserService> logger, IPasswordHasher passwordHasher, IMapper mapper, AuthenticationSettings authenticationSettings)
+        public UserService(AccountDbContext dbContext, ILogger<UserService> logger, IPasswordHasher passwordHasher, IMapper mapper, AuthenticationSettings authenticationSettings, IUserContextService userContextService)
         {
             this.dbContext = dbContext;
             this.logger = logger;
@@ -42,10 +42,12 @@ namespace AccountApi.Services
             return user == null ? throw new NotFoundException("User not found") : user;
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<User> GetAll(string searchPhrase)
         {
             var users = dbContext
                 .Users
+                .Where(r => r.LastName.ToLower().Contains(searchPhrase.ToLower())
+                    || r.Name.ToLower().Contains(searchPhrase.ToLower()))
                 .ToList();
 
             return users;
@@ -85,7 +87,7 @@ namespace AccountApi.Services
             dbContext.SaveChanges ();
         }
 
-        public void UpdateUser(int id, User user)
+        public void UpdateUser(int id, CreateUserDto dto, ClaimsPrincipal user)
         {
             var userdb = dbContext
               .Users
@@ -94,11 +96,10 @@ namespace AccountApi.Services
             if (userdb is null)
                 throw new NotFoundException("User not found");
 
-            userdb.Name=user.Name;
-            userdb.Email=user.Email;
-            userdb.ContactNumber = user.ContactNumber;
-            userdb.DateOfBirth = user.DateOfBirth;
-            userdb.Role = user.Role;
+            userdb.Name = dto.Name;
+            userdb.Email = dto.Email;
+            userdb.ContactNumber = dto.ContactNumber;
+            userdb.DateOfBirth = dto.DateOfBirth;
 
             dbContext.SaveChanges();
         }
