@@ -11,6 +11,7 @@ namespace AccountApi.Services
         void DeleteUser(int id);
         void UpdateUser(int id, User user);
         public void AssignRole(int userId, int roleId);
+        public string GenerateJwt(LoginDto dto);
 
     }
 }

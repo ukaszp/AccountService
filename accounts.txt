@@ -1,0 +1,10 @@
+{
+  "name": "Jan",
+  "lastName": "Kowalski",
+  "email": "jan@gmail.com",
+  "password": "haslo123",
+  "confirmPassword": "haslo123",
+  "contactNumber": "123446789",
+  "gender": true,
+  "dateOfBirth": "2023-11-15T18:24:36.415Z"
+}

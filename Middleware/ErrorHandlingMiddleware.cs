@@ -17,7 +17,12 @@ namespace AccountApi.Middleware
             {
                await next.Invoke(context);
             }
-            catch(NotFoundException notFoundException)
+            catch (ExceptionBadRequest badReqException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(badReqException.Message);
+            }
+            catch (NotFoundException notFoundException)
             {
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);

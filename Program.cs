@@ -48,6 +48,8 @@ internal class Program
         builder.Services.AddControllers();
         builder.Services.AddAutoMapper(typeof(Program));
 
+        builder.Services.AddSingleton(authenticationSettings);
+
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IRoleService, RoleService>();
@@ -78,8 +80,6 @@ internal class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
-
-        app.UseAuthorization(); 
 
         app.MapControllers();
 

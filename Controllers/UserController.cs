@@ -14,17 +14,17 @@ namespace AccountApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserService userService;
 
         public AccountController(IUserService userService)
         {
-            _userService = userService;
+            this.userService = userService;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<User>> GetAll()
         {
-            var users = _userService.GetAll();
+            var users = userService.GetAll();
 
             return Ok(users);
         }
@@ -32,14 +32,21 @@ namespace AccountApi.Controllers
         [HttpPost("register")]
         public ActionResult CreateUser([FromBody] CreateUserDto dto)
         {
-            _userService.CreateUser(dto);
+            userService.CreateUser(dto);
             return Ok();
+        }
+
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginDto dto)
+        {
+            string token = userService.GenerateJwt(dto);
+            return Ok(token);
         }
 
         [HttpGet("{id}")]
         public ActionResult<User> Get([FromRoute]int id)
         {
-            var user=_userService.GetById(id);
+            var user=userService.GetById(id);
 
            return Ok(user);
         }
@@ -48,7 +55,7 @@ namespace AccountApi.Controllers
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] User user, [FromRoute]int id)
         {   
-            _userService.UpdateUser(id, user);
+            userService.UpdateUser(id, user);
 
             return Ok();
         }
@@ -56,14 +63,14 @@ namespace AccountApi.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute]int id)
         {
-            _userService.DeleteUser(id);
+            userService.DeleteUser(id);
 
             return NoContent();
         }   
         [HttpPut("assignrole/{roleid}/{userid}")]
         public ActionResult AssignRole([FromRoute]int  roleid, [FromRoute]int userid) 
         {
-            _userService.AssignRole(roleid, userid);
+            userService.AssignRole(roleid, userid);
             return Ok();
         }
 

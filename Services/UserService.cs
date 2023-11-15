@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace AccountApi.Services
 {
@@ -17,13 +21,15 @@ namespace AccountApi.Services
         private readonly ILogger<UserService> logger;
         private readonly IPasswordHasher passwordHasher;
         private readonly IMapper mapper;
+        private readonly AuthenticationSettings authenticationSettings;
 
-        public UserService(AccountDbContext dbContext, ILogger<UserService> logger, IPasswordHasher passwordHasher, IMapper mapper)
+        public UserService(AccountDbContext dbContext, ILogger<UserService> logger, IPasswordHasher passwordHasher, IMapper mapper, AuthenticationSettings authenticationSettings)
         {
             this.dbContext = dbContext;
             this.logger = logger;
             this.passwordHasher = passwordHasher;
             this.mapper = mapper;
+            this.authenticationSettings = authenticationSettings;
         }
 
         public User GetById(int id)
@@ -117,6 +123,46 @@ namespace AccountApi.Services
             dbContext.SaveChanges();
         }
 
-       
+        public string GenerateJwt(LoginDto dto)
+        {
+            var user = dbContext.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.Email == dto.Email);
+
+            if (user is null)
+            {
+                throw new ExceptionBadRequest("Invalid username or password");
+            }
+
+            var result = passwordHasher.Verify(user.PasswordHash, dto.Password);
+            if (!result)
+            {
+                throw new ExceptionBadRequest("Invalid username or password");
+            }
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, $"{user.Name} {user.LastName}"),
+                new Claim(ClaimTypes.Role, $"{user.Role.Name}"),
+                new Claim("DateofBirth", user.DateOfBirth.ToString("yyyy-MM-dd"))
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey.PadRight(256 / 8)));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(authenticationSettings.JwtExpireDays);
+
+            var token = new JwtSecurityToken(authenticationSettings.JwtIssuer,
+                authenticationSettings.JwtIssuer,
+                claims,
+                DateTime.UtcNow,
+                expires: expires,
+                signingCredentials: cred);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
+        }
+
+
     }
 }
