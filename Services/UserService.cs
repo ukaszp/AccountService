@@ -97,7 +97,7 @@ namespace AccountApi.Services
             dbContext.SaveChanges();
         }
 
-        public void AssignRole(int userId, int roleId) 
+        public void AssignRole(int roleId, int userId) 
         { 
             var userdb = dbContext
                 .Users

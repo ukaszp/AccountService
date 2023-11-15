@@ -12,7 +12,7 @@ namespace AccountApi.Models
         public string ContactNumber { get; set; }
         public bool Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public int RoleId { get; set; } = 5;
+        public int RoleId { get; set; } = 2;
     }
 }
 
