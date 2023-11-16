@@ -7,7 +7,7 @@ namespace AccountApi.Services
     public interface IUserService
     {
         void CreateUser(CreateUserDto dto);
-        public ActionResult<IEnumerable<User>> GetAll([FromQuery] string search);
+        public IEnumerable<User> GetAll(string search);
         User GetById(int id);
         void DeleteUser(int id);
         /*void UpdateUser(int id, User user);*/

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AccountApi.Services
 {
@@ -42,12 +43,12 @@ namespace AccountApi.Services
             return user == null ? throw new NotFoundException("User not found") : user;
         }
 
-        public IEnumerable<User> GetAll(string searchPhrase)
+        public IEnumerable<User> GetAll(string search)
         {
             var users = dbContext
                 .Users
-                .Where(r => r.LastName.ToLower().Contains(searchPhrase.ToLower())
-                    || r.Name.ToLower().Contains(searchPhrase.ToLower()))
+                .Where(r => r.LastName.ToLower().Contains(search.ToLower())
+                    || r.Name.ToLower().Contains(search.ToLower()))
                 .ToList();
 
             return users;
@@ -163,7 +164,5 @@ namespace AccountApi.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
         }
-
-
     }
 }

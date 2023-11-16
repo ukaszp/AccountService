@@ -79,9 +79,9 @@ internal class Program
         app.UseMiddleware<ErrorHandlingMiddleware>();
         app.UseAuthentication();
 
-        app.UseHttpsRedirection();
-
         app.UseAuthorization();
+
+        app.UseHttpsRedirection();
 
         app.MapControllers();
 

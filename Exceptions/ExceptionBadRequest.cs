@@ -3,7 +3,7 @@
 namespace AccountApi.Exceptions
 {
     [Serializable]
-    internal class ExceptionBadRequest : Exception
+    public class ExceptionBadRequest : Exception
     {
 
         public ExceptionBadRequest(string? message) : base(message)
