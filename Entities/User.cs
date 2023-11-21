@@ -19,7 +19,7 @@ namespace AccountApi.Entities
         public string ContactNumber { get; set; }
         public bool Gender { get; set; }
         public DateTime WhenJoined { get; set; }= DateTime.UtcNow;
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public int RoleId { get; set; } = 2;
         public Role Role { get; set; }
     }

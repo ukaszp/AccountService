@@ -23,6 +23,7 @@ namespace AccountApi.Services
         private readonly IPasswordHasher passwordHasher;
         private readonly IMapper mapper;
         private readonly AuthenticationSettings authenticationSettings;
+        private readonly IUserContextService userContextService;
 
         public UserService(AccountDbContext dbContext, ILogger<UserService> logger, IPasswordHasher passwordHasher, IMapper mapper, AuthenticationSettings authenticationSettings, IUserContextService userContextService)
         {
@@ -31,11 +32,11 @@ namespace AccountApi.Services
             this.passwordHasher = passwordHasher;
             this.mapper = mapper;
             this.authenticationSettings = authenticationSettings;
+            this.userContextService = userContextService;
         }
 
         public User GetById(int id)
         {
-
             var user = dbContext
                 .Users
                 .FirstOrDefault(u => u.Id == id);
@@ -147,7 +148,6 @@ namespace AccountApi.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.Name} {user.LastName}"),
                 new Claim(ClaimTypes.Role, $"{user.Role.Name}"),
-                new Claim("DateofBirth", user.DateOfBirth.ToString("yyyy-MM-dd"))
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey.PadRight(256 / 8)));
@@ -162,7 +162,16 @@ namespace AccountApi.Services
                 signingCredentials: cred);
 
             var tokenHandler = new JwtSecurityTokenHandler();
+            tokenHandler.WriteToken(token);
             return tokenHandler.WriteToken(token);
+        }
+        public User GetUserLogin(LoginDto dto)
+        {
+            var user = dbContext.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.Email == dto.Email);
+
+            return user;
         }
     }
 }

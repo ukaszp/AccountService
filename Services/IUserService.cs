@@ -13,6 +13,7 @@ namespace AccountApi.Services
         /*void UpdateUser(int id, User user);*/
         public void AssignRole(int userId, int roleId);
         public string GenerateJwt(LoginDto dto);
+        public User GetUserLogin(LoginDto dto);
 
     }
 }

@@ -63,6 +63,16 @@ internal class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AccountClient",builder=>
+            
+                builder.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()
+                    //.WithOrigins(Configuration["AllowOrigins"])
+            );
+        });
 
         var db = new AccountDbContext();
         var app = builder.Build();
@@ -76,6 +86,7 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        app.UseCors("AccountClient");
         app.UseMiddleware<ErrorHandlingMiddleware>();
         app.UseAuthentication();
 

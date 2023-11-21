@@ -40,7 +40,13 @@ namespace AccountApi.Controllers
         public ActionResult Login([FromBody] LoginDto dto)
         {
             string token = userService.GenerateJwt(dto);
-            return Ok(token);
+            User user = userService.GetUserLogin(dto);
+            var result = new
+            {
+                Token = token,
+                User = user
+            };
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

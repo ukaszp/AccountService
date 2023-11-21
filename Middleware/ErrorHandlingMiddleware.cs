@@ -1,14 +1,15 @@
 ﻿using AccountApi.Exceptions;
+using System.Text.Json;
 
 namespace AccountApi.Middleware
 {
     public class ErrorHandlingMiddleware : IMiddleware
     {
-        private readonly ILogger<ErrorHandlingMiddleware> _logger;
+        private readonly ILogger<ErrorHandlingMiddleware> logger;
 
         public ErrorHandlingMiddleware(ILogger<ErrorHandlingMiddleware> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         async Task IMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
@@ -20,7 +21,9 @@ namespace AccountApi.Middleware
             catch (ExceptionBadRequest badReqException)
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(badReqException.Message);
+                var responseObj = new { message = badReqException.Message };
+                var jsonResponse = JsonSerializer.Serialize(responseObj); 
+                await context.Response.WriteAsync(jsonResponse);
             }
             catch (NotFoundException notFoundException)
             {
@@ -29,7 +32,7 @@ namespace AccountApi.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                logger.LogError(ex, ex.Message);
 
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsync("Something went wrong");
