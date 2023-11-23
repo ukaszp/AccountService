@@ -44,12 +44,21 @@ namespace AccountApi.Services
             return user == null ? throw new NotFoundException("User not found") : user;
         }
 
-        public IEnumerable<User> GetAll(string search)
+        public IEnumerable<User> GetAllSearch(string search)
         {
+
             var users = dbContext
                 .Users
                 .Where(r => r.LastName.ToLower().Contains(search.ToLower())
                     || r.Name.ToLower().Contains(search.ToLower()))
+                .ToList();
+
+            return users;
+        }
+        public IEnumerable<User> GetAll()
+        {
+            var users = dbContext
+                .Users
                 .ToList();
 
             return users;
@@ -89,7 +98,7 @@ namespace AccountApi.Services
             dbContext.SaveChanges ();
         }
 
-        public void UpdateUser(int id, CreateUserDto dto, ClaimsPrincipal user)
+        public bool UpdateUser(int id, UpdateUserDto dto)
         {
             var userdb = dbContext
               .Users
@@ -99,11 +108,15 @@ namespace AccountApi.Services
                 throw new NotFoundException("User not found");
 
             userdb.Name = dto.Name;
+            userdb.LastName = dto.LastName;
             userdb.Email = dto.Email;
             userdb.ContactNumber = dto.ContactNumber;
+            userdb.Gender = dto.Gender;
             userdb.DateOfBirth = dto.DateOfBirth;
 
             dbContext.SaveChanges();
+
+            return true;
         }
 
         public void AssignRole(int roleId, int userId) 

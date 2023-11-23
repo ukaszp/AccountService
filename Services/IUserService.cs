@@ -1,16 +1,18 @@
 ﻿using AccountApi.Entities;
 using AccountApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AccountApi.Services
 {
     public interface IUserService
     {
         void CreateUser(CreateUserDto dto);
-        public IEnumerable<User> GetAll(string search);
+        public IEnumerable<User> GetAllSearch(string search);
+        public IEnumerable<User> GetAll();
         User GetById(int id);
         void DeleteUser(int id);
-        /*void UpdateUser(int id, User user);*/
+        public bool UpdateUser(int id, UpdateUserDto dto);
         public void AssignRole(int userId, int roleId);
         public string GenerateJwt(LoginDto dto);
         public User GetUserLogin(LoginDto dto);

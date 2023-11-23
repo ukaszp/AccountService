@@ -22,12 +22,20 @@ namespace AccountApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetAll([FromQuery]string search)
+        public ActionResult<IEnumerable<User>> GetAllSearch([FromQuery]string search)
         {
-            var users = userService.GetAll(search);
+            var users = userService.GetAllSearch(search);
 
             return Ok(users);
         }
+        [HttpGet("all")]
+        public ActionResult<IEnumerable<User>> Get()
+        {
+            var users = userService.GetAll();
+
+            return Ok(users);
+        }
+
 
         [HttpPost("register")]
         public ActionResult CreateUser([FromBody] CreateUserDto dto)
@@ -58,13 +66,18 @@ namespace AccountApi.Controllers
         }
 
 
-      /*  [HttpPut("{id}")]
-        public ActionResult Update([FromBody] User user, [FromRoute]int id)
-        {   
-            userService.UpdateUser(id, user);
+        [HttpPut("{id}")]
+        public ActionResult Update([FromRoute] int id, [FromBody] UpdateUserDto user)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var isUpdated = userService.UpdateUser(id, user);
 
-            return Ok();
-        }*/
+
+            return isUpdated ? Ok(): NotFound();
+        }
 
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute]int id)
