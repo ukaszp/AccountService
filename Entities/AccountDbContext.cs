@@ -7,7 +7,7 @@ namespace AccountApi.Entities
     public class AccountDbContext:DbContext
     {
         readonly string _connectrionString=
-            "Server = (localdb)\\MyDataBase; Database=AccountDb;Trusted_Connection=True";
+            "Server = (localdb)\\MSSQLLocalDB; Database=PizzeriaAccountDb;Trusted_Connection=True";
 
 
         public DbSet<Role> Roles { get; set; }

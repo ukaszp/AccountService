@@ -64,7 +64,7 @@ namespace AccountApi.Services
             return users;
         }
 
-        public void CreateUser(CreateUserDto dto)
+        public User CreateUser(CreateUserDto dto)
         {
             var passwordHash=passwordHasher.Hash(dto.Password);
             var newUser = new User()
@@ -81,6 +81,7 @@ namespace AccountApi.Services
 
             dbContext.Users.Add(newUser);
             dbContext.SaveChanges();
+            return newUser;
         }
 
         public void DeleteUser(int id)

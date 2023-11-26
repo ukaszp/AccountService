@@ -7,7 +7,7 @@ namespace AccountApi.Services
 {
     public interface IUserService
     {
-        void CreateUser(CreateUserDto dto);
+        User CreateUser(CreateUserDto dto);
         public IEnumerable<User> GetAllSearch(string search);
         public IEnumerable<User> GetAll();
         User GetById(int id);
